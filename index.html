@@ -1,0 +1,1235 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ClearGen - Transparent PNG Maker</title>
+    <!-- Favicon (Emoji for maximum portability) -->
+    <link rel="icon"
+        href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🖼️</text></svg>">
+    <!-- Portable App Meta -->
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;900&display=swap');
+
+        /* 
+           DESIGN TOKENS (CSS VARIABLES)
+           Changing these values updates the entire app's look instantly.
+        */
+        :root {
+            /* Light Mode Palette (Default) */
+            --accent: #064e3b;
+            --accent-soft: #10b981;
+            --bg: var(--accent);
+            --card-bg: #f6f5f4;
+            --card-border: #d7d8d8;
+            --text: var(--accent);
+            --text-muted: rgb(122, 145, 137);
+            --input-bg: #ffffff;
+            --input-border: var(--card-border);
+            --preview-bg: rgba(255, 255, 255, 0.95);
+            --preview-border: var(--accent-soft);
+            --cb-color: rgba(0, 0, 0, 0.04);
+            --status-color: #047857;
+            --prompt-bubble-bg: rgba(255, 255, 255, 0.95);
+            --prompt-bubble-border: rgba(16, 185, 129, 0.2);
+            --prompt-text: var(--accent);
+            --glow: var(--prompt-bubble-border);
+            --hover-bg: rgba(16, 185, 129, 0.05);
+            --link-txt: var(--accent);
+            --link-txt-hover: var(--accent-soft);
+            --version-tag-color: var(--text-muted);
+            --prompt-hover-bg: var(--accent);
+            --prompt-active-bg: var(--accent-soft);
+            --btn-hover-bg: var(--accent);
+            --btn-active-bg: var(--accent-soft);
+            --btn-hover-border: var(--accent-soft);
+            --btn-active-border: #00ad7f;
+            --prompt-hover-border: var(--accent-soft);
+            --prompt-active-border: var(--accent-soft);
+
+            /* BORDER & INTERACTION */
+            --border-width: 2px;
+            --hover-width: 2px;
+            --cb-border-width: 2px;
+            --cb-border-color: var(--card-border);
+            --divider-color: var(--input-border);
+            --icon-color: var(--text);
+            --arrow-color: var(--text-muted);
+            --click-bg: var(--accent);
+            --click-text: #ffffff;
+            --select-chevron: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%2322322d' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M19 9l-7 7-7-7'/%3E%3C/svg%3E");
+
+            /* POWER GLOW - Stacked for maximum thickness */
+            --input-hover-border: var(--status-color);
+            --preview-label-shadow:
+                0 0 15px var(--preview-bg),
+                0 0 10px var(--preview-bg),
+                0 0 5px var(--preview-bg),
+                0 0 2px var(--preview-bg);
+        }
+
+        html.dark {
+            /* Dark Mode Palette (Migraine-Friendly Reds) */
+            --accent: #ff1a1a;
+            --accent-soft: #8b0000;
+            --bg: #010000;
+            --card-bg: rgba(28, 0, 0, 0.99);
+            --card-border: #300000;
+            --text: #f8fafc;
+            --text-muted: rgba(255, 26, 26, 0.6);
+            --input-bg: #050000;
+            --input-border: var(--card-border);
+            --preview-bg: rgba(8, 0, 0, 0.95);
+            --preview-border: rgba(255, 26, 26, 0.3);
+            --cb-color: rgba(255, 255, 255, 0.05);
+            --status-color: #ff1a1a;
+            --prompt-bubble-bg: rgba(18, 0, 0, 0.95);
+            --prompt-bubble-border: rgba(255, 26, 26, 0.1);
+            --prompt-text: #b91c1c;
+            --glow: rgba(255, 26, 26, 0.2);
+            --hover-bg: rgba(255, 0, 0, 0.05);
+            --link-txt: var(--accent);
+            --link-txt-hover: var(--text);
+            --version-tag-color: var(--accent-soft);
+            --prompt-hover-bg: rgba(255, 26, 26, 0.15);
+            --prompt-active-bg: var(--accent);
+            --btn-hover-bg: var(--accent-soft);
+            --btn-active-bg: var(--accent);
+            --btn-hover-border: var(--accent);
+            --btn-active-border: #ff6426;
+            --prompt-hover-border: var(--accent-soft);
+            --prompt-active-border: var(--accent);
+
+            /* BORDER & INTERACTION */
+            --border-width: 2px;
+            --hover-width: 2px;
+            --cb-border-width: 2px;
+            --cb-border-color: var(--card-border);
+            --divider-color: var(--input-border);
+            --icon-color: var(--text);
+            --arrow-color: var(--text-muted);
+            --click-bg: var(--accent-soft);
+            --click-text: #ffffff;
+            --select-chevron: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%23ff1a1a' stroke-opacity='0.6' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M19 9l-7 7-7-7'/%3E%3C/svg%3E");
+
+            /* POWER GLOW - Deep contrast for dark mode */
+            --input-hover-border: var(--accent-soft);
+            --preview-label-shadow:
+                0 0 20px var(--preview-bg),
+                0 0 12px var(--preview-bg),
+                0 0 8px var(--preview-bg),
+                0 0 4px var(--preview-bg);
+        }
+
+        body {
+            font-family: 'Inter', system-ui, -apple-system, sans-serif;
+            background-color: var(--bg);
+            color: var(--text);
+            transition: background-color 0.4s cubic-bezier(0.4, 0, 0.2, 1), color 0.4s ease;
+            margin: 0;
+            min-height: 100vh;
+        }
+
+        /* CORE COMPONENT STYLES */
+        .card {
+            background-color: var(--card-bg);
+            border: 2px solid var(--card-border);
+            transition: all 0.3s ease;
+            position: relative;
+            /* Base for version tag */
+        }
+
+        .accent-text {
+            background-image: linear-gradient(to right, var(--accent), var(--accent-soft));
+            background-clip: text;
+            -webkit-background-clip: text;
+            color: transparent;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .btn-primary {
+            background-image: linear-gradient(to right, var(--accent-soft), var(--accent));
+            box-shadow: 0 10px 20px -5px var(--glow);
+            color: white;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            cursor: pointer;
+            border: var(--border-width) solid var(--input-border);
+        }
+
+        .btn-primary:hover {
+            background-image: linear-gradient(to right, var(--btn-hover-bg), var(--btn-hover-bg));
+            border-color: var(--btn-hover-border) !important;
+        }
+
+        .btn-primary:active {
+            background-image: linear-gradient(to right, var(--btn-active-bg), var(--btn-active-bg));
+            border-color: var(--btn-active-border) !important;
+            transform: scale(0.98);
+            --jiggle-anim: prompt-jiggle 0.4s cubic-bezier(0.36, 0.07, 0.19, 0.97);
+        }
+
+        .input-field {
+            background-color: var(--input-bg);
+            border-color: var(--input-border);
+            border-width: var(--border-width);
+            color: var(--text);
+        }
+
+        .input-field:focus {
+            border-color: var(--accent-soft) !important;
+            border-width: var(--hover-width);
+            outline: none;
+            box-shadow: 0 0 0 3px var(--glow);
+        }
+
+        .input-field:hover {
+            border-color: var(--input-hover-border) !important;
+        }
+
+        .input-field:active {
+            --jiggle-anim: btn-jiggle 0.4s cubic-bezier(0.36, 0.07, 0.19, 0.97) !important;
+        }
+
+        /* Stable menu for the Resolution Library results in no glitching/jumping */
+        select.input-field:active {
+            --hop-anim: none !important;
+            --jiggle-anim: none !important;
+        }
+
+        /* UNIVERSAL CONTROL CLASS 
+           Used by: Swapper, Ratio Buttons, Prompts, and Icons
+        */
+        .ctrl-action {
+            background-color: var(--input-bg);
+            border: var(--border-width) solid var(--input-border);
+            color: var(--text);
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .ctrl-action:hover {
+            background-color: var(--btn-hover-bg) !important;
+            border-color: var(--btn-hover-border) !important;
+            border-width: var(--hover-width);
+            color: var(--click-text) !important;
+        }
+
+        .ctrl-action:hover svg {
+            color: var(--click-text) !important;
+        }
+
+        .ctrl-action:active {
+            background-color: var(--btn-active-bg) !important;
+            border-color: var(--btn-active-border) !important;
+            color: var(--click-text) !important;
+            --jiggle-anim: btn-jiggle 0.4s cubic-bezier(0.36, 0.07, 0.19, 0.97);
+        }
+
+        /* Global Persistent Aura */
+        .selected,
+        .input-field:focus {
+            border-color: var(--accent-soft) !important;
+            box-shadow: 0 0 20px var(--glow);
+            background-color: var(--hover-bg);
+            outline: none;
+        }
+
+        .ctrl-action.selected {
+            color: var(--accent-soft);
+        }
+
+        .accent-link {
+            color: var(--link-txt);
+            transition: all 0.2s ease;
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        .accent-link:hover {
+            color: var(--link-txt-hover);
+            text-decoration: underline;
+        }
+
+        .covert-link {
+            text-decoration: none !important;
+            cursor: pointer;
+            transition: opacity 0.5s ease;
+            display: inline-block;
+        }
+
+        .covert-link:hover {
+            opacity: 1 !important;
+            text-decoration: underline !important;
+        }
+
+        /* Instruction List Styling */
+        .instruction-list {
+            list-style: none;
+            counter-reset: step-counter;
+            padding-left: 0;
+        }
+
+        .instruction-list>li {
+            counter-increment: step-counter;
+            position: relative;
+            padding-left: 2.5rem;
+            margin-bottom: 1.25rem;
+        }
+
+        .instruction-list>li::before {
+            content: counter(step-counter);
+            position: absolute;
+            left: 0;
+            top: 0;
+            width: 1.6rem;
+            height: 1.6rem;
+            background-color: var(--accent-soft);
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.75rem;
+            font-weight: 900;
+        }
+
+        .info-list {
+            list-style: none;
+            padding-left: 1rem;
+            margin-top: 0.5rem;
+            border-left: 2px solid var(--divider-color);
+        }
+
+        .info-list li {
+            position: relative;
+            padding-left: 1.25rem;
+            opacity: 0.9;
+        }
+
+        .info-list li::before {
+            content: "ℹ";
+            position: absolute;
+            left: 0;
+            color: var(--accent-soft);
+            font-weight: bold;
+        }
+
+        /* Chevron / Collapse Icons */
+        .chevron {
+            color: var(--text-muted);
+            transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .prompt-card.expanded .chevron {
+            transform: rotate(180deg);
+        }
+
+        /* Aspect Ratio Swapper: Multi-Layered Animation System */
+        #swapBtn {
+            overflow: visible;
+        }
+
+        /* The twirl fires on the rotator, while the button handles the jiggle via ctrl-action */
+        .swapper-rotator {
+            transition: transform 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            pointer-events: none;
+        }
+
+        #swapBtn svg {
+            transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            color: var(--icon-color);
+            display: block;
+        }
+
+        #swapBtn:hover svg {
+            transform: rotate(-25deg) scale(1.1);
+        }
+
+        @keyframes btn-jiggle {
+            0% {
+                transform: scale(1);
+            }
+
+            15% {
+                transform: scale(0.9) translateY(2px);
+            }
+
+            45% {
+                transform: scale(1.05) translateY(-1px);
+            }
+
+            75% {
+                transform: scale(0.98) translateY(0.5px);
+            }
+
+            100% {
+                transform: scale(1);
+            }
+        }
+
+        @keyframes prompt-jiggle {
+            0% {
+                transform: scale(1);
+            }
+
+            20% {
+                transform: scale(0.97) translateY(1px);
+            }
+
+            50% {
+                transform: scale(1.02) translateY(-0.5px);
+            }
+
+            100% {
+                transform: scale(1);
+            }
+        }
+
+        @keyframes hop-joy {
+            0% {
+                transform: translateY(0);
+            }
+
+            15% {
+                transform: translateY(1.2px) scaleY(0.99);
+            }
+
+            /* Anticipation dip */
+            40% {
+                transform: translateY(-6px) scaleY(1.03);
+            }
+
+            /* Primary Hop */
+            60% {
+                transform: translateY(0.6px) scaleY(1);
+            }
+
+            /* Impact Landing */
+            80% {
+                transform: translateY(-1.8px);
+            }
+
+            100% {
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes hop-joy-grow {
+            0% {
+                transform: scale(1) translateY(0);
+            }
+
+            15% {
+                transform: scale(1.02) translateY(1.2px) scaleY(0.99);
+            }
+
+            40% {
+                transform: scale(1.05) translateY(-6px) scaleY(1.03);
+            }
+
+            60% {
+                transform: scale(1.07) translateY(0.6px) scaleY(1);
+            }
+
+            80% {
+                transform: scale(1.09) translateY(-1.8px);
+            }
+
+            100% {
+                transform: scale(1.1) translateY(0);
+            }
+        }
+
+        .ctrl-action,
+        .btn-primary,
+        .accent-link,
+        .covert-link,
+        .input-field,
+        #themeToggle {
+            animation: var(--hop-anim, none), var(--jiggle-anim, none);
+        }
+
+        .ctrl-action:hover,
+        .btn-primary:hover,
+        .accent-link:hover,
+        .covert-link:hover,
+        .input-field:hover {
+            --hop-anim: hop-joy 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+        }
+
+        #themeToggle:hover {
+            --hop-anim: hop-joy-grow 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+        }
+
+        .prompt-bubble:active {
+            --jiggle-anim: prompt-jiggle 0.4s cubic-bezier(0.36, 0.07, 0.19, 0.97);
+        }
+
+        .preview-container {
+            background-color: var(--preview-bg);
+            border-color: var(--preview-border);
+            border-width: var(--border-width);
+        }
+
+        #previewLabel {
+            text-shadow: var(--preview-label-shadow);
+            z-index: 10;
+        }
+
+        .checkerboard {
+            background-image: conic-gradient(var(--cb-color) 90deg,
+                    transparent 90deg 180deg,
+                    var(--cb-color) 180deg 270deg,
+                    transparent 270deg);
+            background-size: 24px 24px;
+            border: var(--cb-border-width) solid var(--cb-border-color);
+        }
+
+        /* PROMPT WIDGET STYLES */
+        .prompt-card {
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .prompt-content {
+            display: grid;
+            grid-template-rows: 0fr;
+            transition: grid-template-rows 0.3s ease-out, margin-top 0.3s ease, opacity 0.3s ease;
+            opacity: 0;
+            overflow: hidden;
+        }
+
+        .prompt-card.expanded .prompt-content {
+            grid-template-rows: 1fr;
+            margin-top: 0.75rem;
+            opacity: 1;
+        }
+
+        .prompt-inner {
+            min-height: 0;
+            padding: 8px 12px;
+            /* Fixed: Prevents animation cutoff on overshoot */
+        }
+
+        .chevron {
+            transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            color: var(--arrow-color);
+        }
+
+        .prompt-card.expanded .chevron {
+            transform: rotate(180deg);
+        }
+
+        /* COPY ANIMATION */
+        .copy-feedback {
+            position: absolute;
+            top: -24px;
+            right: 0;
+            font-size: 10px;
+            font-weight: 900;
+            color: var(--accent);
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            pointer-events: none;
+            opacity: 0;
+            transform: translateY(10px);
+            transition: all 0.3s cubic-bezier(0.18, 0.89, 0.32, 1.28);
+        }
+
+        .copy-feedback.show {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .prompt-bubble {
+            padding: 1rem;
+            border-radius: 1rem;
+        }
+
+        .prompt-text-element {
+            color: inherit;
+            /* Inherit from ctrl-action state */
+        }
+
+        .prompt-bubble:hover {
+            background-color: var(--prompt-hover-bg) !important;
+            border-color: var(--prompt-hover-border) !important;
+        }
+
+        .prompt-bubble:active {
+            background-color: var(--prompt-active-bg) !important;
+            border-color: var(--prompt-active-border) !important;
+        }
+
+        .prompt-bubble:active .prompt-text-element {
+            color: var(--click-text) !important;
+        }
+
+        /* CUSTOM FORM ELEMENTS */
+        input::-webkit-outer-spin-button,
+        input::-webkit-inner-spin-button {
+            -webkit-appearance: none;
+            margin: 0;
+        }
+
+        select {
+            appearance: none;
+            background-image: var(--select-chevron);
+            background-repeat: no-repeat;
+            background-position: right 0.75rem center;
+            background-size: 1rem;
+        }
+
+        select,
+        select option {
+            background-color: var(--input-bg);
+            color: var(--text);
+        }
+
+        select optgroup {
+            background-color: var(--input-bg);
+            color: var(--text);
+            font-weight: 900 !important;
+            font-style: normal;
+        }
+
+        .hidden-text {
+            display: none;
+        }
+
+        #statusMsg {
+            color: var(--status-color);
+        }
+
+        .muted-text {
+            color: var(--text-muted);
+        }
+
+        .version-tag {
+            position: absolute;
+            top: 1.5rem;
+            right: 2rem;
+            font-size: 9px;
+            font-weight: 900;
+            opacity: 0.3;
+            letter-spacing: 0.2em;
+            color: var(--version-tag-color) !important;
+        }
+    </style>
+</head>
+
+<body class="min-h-screen flex flex-col items-center justify-center p-4">
+
+    <!-- Theme Toggle -->
+    <div class="fixed top-6 right-6 z-50">
+        <button id="themeToggle"
+            class="p-3 rounded-full card shadow-lg active:scale-95 flex items-center justify-center w-12 h-12">
+            <span id="themeIcon" class="text-xl">☀️</span>
+        </button>
+    </div>
+
+    <div class="w-full max-w-2xl card rounded-3xl p-6 md:p-10 shadow-2xl transition-all duration-300">
+        <a href="https://github.com/TommyLangzik/ClearGen" target="_blank" class="version-tag covert-link uppercase">v
+            1.0.0</a>
+        <header class="mb-8 text-center">
+            <h1 class="text-4xl font-black accent-text tracking-tighter">
+                ClearGen
+            </h1>
+            <p class="muted-text mt-2 text-xs font-bold tracking-widest uppercase opacity-80">
+                Transparent PNG Creation Utility
+            </p>
+            <div class="mt-4 border-t" style="border-color: var(--divider-color);"></div>
+        </header>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-8 mb-8">
+            <div class="space-y-6">
+                <!-- Dimension Inputs -->
+                <div class="flex items-end gap-3">
+                    <div class="flex-1">
+                        <label
+                            class="muted-text block text-[10px] font-bold uppercase tracking-widest mb-1.5 ml-1">Width</label>
+                        <input type="number" id="widthInput" value="1920" min="1" max="8000"
+                            class="input-field w-full rounded-xl px-4 py-3.5 transition-all text-lg font-semibold">
+                    </div>
+
+                    <button id="swapBtn" class="ctrl-action mb-0.5 p-3.5 rounded-xl group" title="Swap Dimensions">
+                        <div class="swapper-rotator">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 transition-colors" fill="none"
+                                viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5"
+                                    d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4" />
+                            </svg>
+                        </div>
+                    </button>
+
+                    <div class="flex-1">
+                        <label
+                            class="muted-text block text-[10px] font-bold uppercase tracking-widest mb-1.5 ml-1">Height</label>
+                        <input type="number" id="heightInput" value="1080" min="1" max="8000"
+                            class="input-field w-full rounded-xl px-4 py-3.5 transition-all text-lg font-semibold">
+                    </div>
+                </div>
+
+                <!-- Dimension Preset Dropdown -->
+                <div>
+                    <label
+                        class="muted-text block text-[10px] font-bold uppercase tracking-widest mb-1.5 ml-1">Resolution
+                        Library</label>
+                    <select id="sizeDropdown"
+                        class="input-field w-full rounded-xl px-4 py-3 transition-all text-sm border-2 font-semibold italic cursor-pointer">
+                        <option value="" style="font-weight: 900; font-style: italic;">Common Dimensions...</option>
+                        <optgroup label="Standard TV & Video">
+                            <option value="720x480">720 x 480 (480p SD)</option>
+                            <option value="1280x720">1280 x 720 (720p HD)</option>
+                            <option value="1920x1080">1920 x 1080 (1080p FHD)</option>
+                            <option value="2560x1440">2560 x 1440 (2K QHD)</option>
+                            <option value="3840x2160">3840 x 2160 (4K UHD)</option>
+                        </optgroup>
+                        <optgroup label="Ultra-Wide">
+                            <option value="2560x1080">2560 x 1080 (UW-FHD)</option>
+                            <option value="3440x1440">3440 x 1440 (UW-QHD)</option>
+                            <option value="5120x2160">5120 x 2160 (UW-4K)</option>
+                        </optgroup>
+                        <optgroup label="Standard Laptops & Displays">
+                            <option value="800x600">800 x 600 (Legacy Screens)</option>
+                            <option value="1366x768">1366 x 768 (Legacy Notebooks)</option>
+                            <option value="1920x1080">1920 x 1080 (Modern FHD)</option>
+                            <option value="1920x1200">1920 x 1200 (WUXGA 16:10)</option>
+                            <option value="2560x1440">2560 x 1440 (QHD 16:9)</option>
+                            <option value="2560x1600">2560 x 1600 (QHD+ 16:10)</option>
+                        </optgroup>
+                        <optgroup label="Square Media Assets">
+                            <option value="512x512">512 x 512</option>
+                            <option value="1024x1024">1024 x 1024</option>
+                            <option value="2048x2048">2048 x 2048</option>
+                            <option value="4096x4096">4096 x 4096</option>
+                        </optgroup>
+                    </select>
+                </div>
+
+                <!-- Aspect Ratio Presets -->
+                <div>
+                    <label class="muted-text block text-[10px] font-bold uppercase tracking-widest mb-1.5 ml-1">Quick
+                        Ratio</label>
+                    <div class="flex flex-wrap gap-1.5">
+                        <button class="ctrl-action ratio-btn px-3 py-2 text-xs font-bold rounded-lg transition-all"
+                            title="Ultra Wide-Screen" data-ratio="21:9">21:9</button>
+                        <button class="ctrl-action ratio-btn px-3 py-2 text-xs font-bold rounded-lg transition-all"
+                            title="Classic Wide-Screen" data-ratio="16:9">16:9</button>
+                        <button class="ctrl-action ratio-btn px-3 py-2 text-xs font-bold rounded-lg transition-all"
+                            title="Modern Productivity Devices" data-ratio="16:10">16:10</button>
+                        <button class="ctrl-action ratio-btn px-3 py-2 text-xs font-bold rounded-lg transition-all"
+                            title="Oldschool Screens" data-ratio="4:3">4:3</button>
+                        <button class="ctrl-action ratio-btn px-3 py-2 text-xs font-bold rounded-lg transition-all"
+                            title="Social Media" data-ratio="1:1">1:1</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Preview Area -->
+            <div
+                class="relative flex flex-col items-center justify-center preview-container rounded-3xl overflow-hidden border-2 border-dashed min-h-[300px] transition-colors duration-300">
+                <div id="previewBox"
+                    class="checkerboard shadow-2xl flex items-center justify-center relative overflow-hidden transition-all duration-500 ease-out">
+                    <span id="previewLabel"
+                        class="text-[10px] md:text-xs font-mono font-black muted-text pointer-events-none">1920x1080</span>
+                </div>
+                <div class="muted-text mt-6 text-[10px] font-bold uppercase tracking-widest">
+                    - Visual Scale -</div>
+            </div>
+        </div>
+
+        <button id="downloadBtn"
+            class="btn-primary w-full py-5 rounded-2xl font-black text-xl active:scale-[0.98] transition-all flex items-center justify-center gap-3 group">
+            <svg xmlns="http://www.w3.org/2000/svg"
+                class="h-6 w-6 transform group-hover:-translate-y-1 transition-transform" fill="none"
+                viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5"
+                    d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+            </svg>
+            GENERATE PNG
+        </button>
+
+        <div id="statusMsg"
+            class="mt-6 text-center text-sm font-bold h-5 opacity-0 transition-opacity uppercase tracking-widest"></div>
+
+        <!-- Prompt Quick-Copy Widgets -->
+        <div class="mt-8 space-y-4 pt-6 border-t" style="border-color: var(--divider-color);">
+            <p class="muted-text mt-2 text-xs font-bold tracking-widest uppercase opacity-80 text-center">
+                <i>A Simple Fix for <a href="https://gemini.google.com" target="_blank" class="accent-link"><b>Google
+                            Gemini</b></a>'s Aspect Ratio Woes... and Beyond!</i>
+            </p>
+            <div class="prompt-card">
+                <div class="flex items-center justify-between cursor-pointer group" onclick="togglePrompt(this)">
+                    <h3 class="muted-text text-[10px] font-black uppercase tracking-widest pl-1">
+                        Brand New Image Prompt
+                    </h3>
+                    <div class="flex items-center gap-2">
+                        <button class="ctrl-action relative p-2 rounded-xl transition-all" title="Quick Copy"
+                            onclick="event.stopPropagation(); copyPrompt(this)">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" style="color: var(--icon-color);"
+                                fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5"
+                                    d="M8 5H6a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-1M8 5a2 2 0 002 2h2a2 2 0 002-2M8 5a2 2 0 012-2h2a2 2 0 012 2m0 0h2a2 2 0 012 2v3m2 4H10m0 0l3-3m-3 3l3 3" />
+                            </svg>
+                            <span class="copy-feedback">Copied!</span>
+                        </button>
+                        <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 chevron" fill="none" viewBox="0 0 24 24"
+                            stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5"
+                                d="M19 9l-7 7-7-7" />
+                        </svg>
+                    </div>
+                </div>
+                <div class="prompt-content">
+                    <div class="prompt-inner">
+                        <div class="ctrl-action prompt-bubble cursor-pointer" onclick="copyPrompt(this)">
+                            <p class="prompt-text-element text-[13px] font-medium leading-relaxed italic">
+                                "Use the blank transparent PNG image file as the reference/blueprint for the final
+                                aspect ratio."
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="prompt-card">
+                <div class="flex items-center justify-between cursor-pointer group" onclick="togglePrompt(this)">
+                    <h3 class="muted-text text-[10px] font-black uppercase tracking-widest pl-1">
+                        Editing/Extending Prompt
+                    </h3>
+                    <div class="flex items-center gap-2">
+                        <button class="ctrl-action relative p-2 rounded-xl transition-all" title="Quick Copy"
+                            onclick="event.stopPropagation(); copyPrompt(this)">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" style="color: var(--icon-color);"
+                                fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5"
+                                    d="M8 5H6a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-1M8 5a2 2 0 002 2h2a2 2 0 002-2M8 5a2 2 0 012-2h2a2 2 0 012 2m0 0h2a2 2 0 012 2v3m2 4H10m0 0l3-3m-3 3l3 3" />
+                            </svg>
+                            <span class="copy-feedback">Copied!</span>
+                        </button>
+                        <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 chevron" fill="none" viewBox="0 0 24 24"
+                            stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5"
+                                d="M19 9l-7 7-7-7" />
+                        </svg>
+                    </div>
+                </div>
+                <div class="prompt-content">
+                    <div class="prompt-inner">
+                        <div class="ctrl-action prompt-bubble cursor-pointer" onclick="copyPrompt(this)">
+                            <p class="prompt-text-element text-[13px] font-medium leading-relaxed italic">
+                                "Use the blank transparent PNG image file as the reference/blueprint for the final
+                                aspect ratio and fill the surrounding area that wasn't shown in the original picture."
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Subsection: Modded Extension Quick-Selects -->
+            <div class="mt-8 pt-6 border-t" style="border-color: var(--divider-color);">
+                <p
+                    class="muted-text mb-4 text-[10px] font-bold tracking-[0.2em] uppercase opacity-80 text-center w-full">
+                    Modded Extension Quick-Selects
+                </p>
+                <div class="flex flex-wrap justify-center gap-3">
+                    <!-- Left Aligned -->
+                    <button class="ctrl-action p-3 rounded-xl flex items-center justify-center group relative"
+                        title="Left-Aligned Outpaint" onclick="copyPrompt(this)">
+                        <span class="prompt-text-element hidden-text">Use the blank transparent PNG image file as the
+                            reference/blueprint for the final aspect ratio, and [after left-aligning the image] fill the
+                            surrounding right-side areas that weren't shown in the original picture.</span>
+                        <svg viewBox="0 0 24 24" class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2.5">
+                            <path d="M3 3h4v18H3V3z" fill="currentColor" opacity="0.3" />
+                            <path d="M10 12h11m-3-3l3 3-3 3" />
+                        </svg>
+                        <span class="copy-feedback">Copied!</span>
+                    </button>
+                    <!-- Center Aligned (Horizontal) -->
+                    <button class="ctrl-action p-3 rounded-xl flex items-center justify-center group relative"
+                        title="Center-Aligned Horizontal Outpaint" onclick="copyPrompt(this)">
+                        <span class="prompt-text-element hidden-text">Use the blank transparent PNG image file as the
+                            reference/blueprint for the final aspect ratio, and [after center-aligning the image] fill
+                            the surrounding left-side and right-side areas that weren't shown in the original
+                            picture.</span>
+                        <svg viewBox="0 0 24 24" class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2.5">
+                            <path d="M10 5h4v14h-4V5z" fill="currentColor" opacity="0.3" />
+                            <path d="M7 12H3m3-3l-3 3 3 3" /> <!-- Left Arrow -->
+                            <path d="M17 12h4m-3-3l3 3-3 3" /> <!-- Right Arrow -->
+                        </svg>
+                        <span class="copy-feedback">Copied!</span>
+                    </button>
+                    <!-- Right Aligned -->
+                    <button class="ctrl-action p-3 rounded-xl flex items-center justify-center group relative"
+                        title="Right-Aligned Outpaint" onclick="copyPrompt(this)">
+                        <span class="prompt-text-element hidden-text">Use the blank transparent PNG image file as the
+                            reference/blueprint for the final aspect ratio, and [after right-aligning the image] fill
+                            the surrounding left-side areas that weren't shown in the original picture.</span>
+                        <svg viewBox="0 0 24 24" class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2.5">
+                            <path d="M17 3h4v18h-4V3z" fill="currentColor" opacity="0.3" />
+                            <path d="M14 12H3m3-3l-3 3 3 3" />
+                        </svg>
+                        <span class="copy-feedback">Copied!</span>
+                    </button>
+                    <!-- Top Aligned -->
+                    <button class="ctrl-action p-3 rounded-xl flex items-center justify-center group relative"
+                        title="Top-Aligned Outpaint" onclick="copyPrompt(this)">
+                        <span class="prompt-text-element hidden-text">Use the blank transparent PNG image file as the
+                            reference/blueprint for the final aspect ratio, and [after top-aligning the image] fill the
+                            surrounding lower/bottom areas that weren't shown in the original picture.</span>
+                        <svg viewBox="0 0 24 24" class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2.5">
+                            <path d="M3 3h18v4H3V3z" fill="currentColor" opacity="0.3" />
+                            <path d="M12 10v11m-3-3l3 3 3-3" />
+                        </svg>
+                        <span class="copy-feedback">Copied!</span>
+                    </button>
+                    <!-- Center Aligned (Vertical) -->
+                    <button class="ctrl-action p-3 rounded-xl flex items-center justify-center group relative"
+                        title="Center-Aligned Vertical Outpaint" onclick="copyPrompt(this)">
+                        <span class="prompt-text-element hidden-text">Use the blank transparent PNG image file as the
+                            reference/blueprint for the final aspect ratio, and [after center-aligning the image] fill
+                            the surrounding top and bottom areas that weren't shown in the original picture.</span>
+                        <svg viewBox="0 0 24 24" class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2.5">
+                            <path d="M5 10h14v4H5v-4z" fill="currentColor" opacity="0.3" />
+                            <path d="M12 7V3m-3 3l3-3 3 3" /> <!-- Top Arrow -->
+                            <path d="M12 17v4m-3-3l3 3 3-3" /> <!-- Bottom Arrow -->
+                        </svg>
+                        <span class="copy-feedback">Copied!</span>
+                    </button>
+                    <!-- Bottom Aligned -->
+                    <button class="ctrl-action p-3 rounded-xl flex items-center justify-center group relative"
+                        title="Bottom-Aligned Outpaint" onclick="copyPrompt(this)">
+                        <span class="prompt-text-element hidden-text">Use the blank transparent PNG image file as the
+                            reference/blueprint for the final aspect ratio, and [after bottom-aligning the image] fill
+                            the surrounding upper/top areas that weren't shown in the original picture.</span>
+                        <svg viewBox="0 0 24 24" class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2.5">
+                            <path d="M3 17h18v4H3v-4z" fill="currentColor" opacity="0.3" />
+                            <path d="M12 14V3m-3 3l3-3 3 3" />
+                        </svg>
+                        <span class="copy-feedback">Copied!</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Instruction Section -->
+            <div class="mt-4 border-t" style="border-color: var(--divider-color);"></div>
+            <div class="prompt-card group">
+                <div class="flex items-center justify-between cursor-pointer py-4"
+                    onclick="this.parentElement.classList.toggle('expanded')">
+                    <h3 class="muted-text text-[10px] font-bold uppercase tracking-widest pl-1">
+                        ClearGen Pro Tips & Instructions
+                    </h3>
+                    <div class="flex items-center gap-2">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 chevron" fill="none" viewBox="0 0 24 24"
+                            stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5"
+                                d="M19 9l-7 7-7-7" />
+                        </svg>
+                    </div>
+                </div>
+                <div class="prompt-content">
+                    <div class="prompt-inner">
+                        <div class="p-4 rounded-2xl border-2 border-dashed muted-text text-xs leading-relaxed"
+                            style="border-color: var(--divider-color);">
+                            <ol class="instruction-list">
+                                <li><b>SET IMAGE DIMENSIONS</b> via the <b>'Width/Height'</b> fields,
+                                    <b>'Quick Ratio'</b> buttons, or the <b>'Resolution Library'</b> <i>[for
+                                        common standard blueprints]</i>. Use the <b>'Swap Dimensions'</b> button to flip
+                                    the orientation.
+                                </li>
+                                <li><b>DOWNLOAD</b> the transparent placeholder image by clicking
+                                    "<b>Generate PNG</b>".</li>
+                                <li><b>CLICK</b> on <b> THE DESIRED PROMPT</b> to auto-copy it to your clipboard.
+                                    <ul class="info-list">
+                                        <li><i><b>PRO TIP:</b> Clicking the <b>'Modded Extension' icons</b> will
+                                                auto-copy the corresponding alignment-aware prompt to your
+                                                clipboard.</i></li>
+                                    </ul>
+                                </li>
+                                <li><b>CLICK</b> on <b>'GOOGLE GEMINI'</b> to open Gemini in a New Tab.</li>
+                                <li><b>UPLOAD THE IMAGE</b> and <b>PASTE THE PROMPT</b> into the field as a
+                                    base for crafting your final image prompt.
+                                    <ul class="info-list">
+                                        <li><i><b>NOTE:</b> Don't forget to add your own image upload and/or prompt
+                                                details if needed!</i></li>
+                                    </ul>
+                                </li>
+                            </ol>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Connect & Support -->
+            <div class="mt-12 pt-8 border-t" style="border-color: var(--divider-color);">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <!-- Connectivity -->
+                    <div>
+                        <p class="muted-text mb-4 text-[10px] font-bold uppercase tracking-widest ml-1">
+                            <a href="https://linktr.ee/tommylangzik" target="_blank" class="accent-link">Connect</a>
+                        </p>
+                        <div class="flex gap-2">
+                            <!-- Personal Website (Carrd) -->
+                            <a href="https://tommylangzik.carrd.co" target="_blank"
+                                class="ctrl-action p-2.5 rounded-xl group" title="Personal Website">
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"
+                                    stroke-width="2.5">
+                                    <circle cx="12" cy="12" r="10" />
+                                    <path stroke-linecap="round" stroke-linejoin="round"
+                                        d="M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20M2 12h20" />
+                                </svg>
+                            </a>
+                            <!-- GitHub -->
+                            <a href="https://github.com/TommyLangzik" target="_blank"
+                                class="ctrl-action p-2.5 rounded-xl group" title="GitHub Profile">
+                                <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
+                                    <path
+                                        d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.041-1.416-4.041-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z" />
+                                </svg>
+                            </a>
+                            <!-- LinkedIn -->
+                            <a href="https://www.linkedin.com/in/TommyLangzik" target="_blank"
+                                class="ctrl-action p-2.5 rounded-xl group" title="LinkedIn Profile">
+                                <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
+                                    <path
+                                        d="M19 0h-14c-2.761 0-5 2.239-5 5v14c0 2.761 2.239 5 5 5h14c2.762 0 5-2.238 5-5v-14c0-2.761-2.238-5-5-5zm-11 19h-3v-11h3v11zm-1.5-12.268c-.966 0-1.75-.79-1.75-1.764s.784-1.764 1.75-1.764 1.75.79 1.75 1.764-.783 1.764-1.75 1.764zm13.5 12.268h-3v-5.604c0-3.368-4-3.113-4 0v5.604h-3v-11h3v1.765c1.396-2.586 7-2.777 7 2.476v6.759z" />
+                                </svg>
+                            </a>
+                            <!-- Email -->
+                            <a href="mailto:TommyLangzik@Outlook.com" class="ctrl-action p-2.5 rounded-xl group"
+                                title="Contact Email">
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"
+                                    stroke-width="2.5">
+                                    <path stroke-linecap="round" stroke-linejoin="round"
+                                        d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                                </svg>
+                            </a>
+                        </div>
+                    </div>
+                    <!-- Support -->
+                    <div class="md:text-right">
+                        <p class="muted-text mb-3 text-[10px] font-bold uppercase tracking-widest mr-1">
+                            Support <a href="https://github.com/TommyLangzik/ClearGen" target="_blank"
+                                class="covert-link">The
+                                Project</a>
+                        </p>
+                        <a href="https://ko-fi.com/tommylangzik" target="_blank"
+                            class="accent-link text-xs font-black italic">
+                            Buy me a coffee &rarr;
+                        </a>
+                        <p class="text-[9px] muted-text mt-1 opacity-60">Help independent creators build better tools.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Initialize elements
+        const widthInput = document.getElementById('widthInput');
+        const heightInput = document.getElementById('heightInput');
+        const previewBox = document.getElementById('previewBox');
+        const previewLabel = document.getElementById('previewLabel');
+        const downloadBtn = document.getElementById('downloadBtn');
+        const swapBtn = document.getElementById('swapBtn');
+        const sizeDropdown = document.getElementById('sizeDropdown');
+        const statusMsg = document.getElementById('statusMsg');
+        const ratioBtns = document.querySelectorAll('.ratio-btn');
+        const themeToggle = document.getElementById('themeToggle');
+        const themeIcon = document.getElementById('themeIcon');
+        const html = document.documentElement;
+
+        /**
+         * Toggles the expand/collapse state of the prompt cards.
+         */
+        function togglePrompt(el) {
+            const card = el.closest('.prompt-card');
+            card.classList.toggle('expanded');
+        }
+
+        /**
+         * Copies text from the prompt bubble to the clipboard.
+         * Automatically handles quote stripping for a clean final prompt.
+         */
+        async function copyPrompt(el) {
+            try {
+                // Universal Grabber: Finds text in hidden spans or paragraph tags
+                const textSource = el.querySelector('.prompt-text-element') ||
+                    el.closest('.prompt-card')?.querySelector('p');
+
+                if (!textSource) throw new Error("Text not found");
+
+                let text = textSource.textContent.trim();
+                // Strip decorative quotes if they exist
+                if (text.startsWith('"') && text.endsWith('"')) {
+                    text = text.substring(1, text.length - 1);
+                }
+
+                await navigator.clipboard.writeText(text);
+
+                // Show visual feedback: Looks for feedback span in current button or parent card
+                const feedback = el.querySelector('.copy-feedback') ||
+                    el.closest('.prompt-card')?.querySelector('.copy-feedback');
+
+                if (feedback) {
+                    feedback.classList.remove('show');
+                    void feedback.offsetWidth; // Force reflow for repeat animations
+                    feedback.classList.add('show');
+                    setTimeout(() => feedback.classList.remove('show'), 2000);
+                }
+
+                showStatus("Prompt Copied");
+            } catch (err) {
+                showStatus("Copy Failed", true);
+                console.error("Copy Error:", err);
+            }
+        }
+
+        // Theme Switcher Logic
+        themeToggle.addEventListener('click', () => {
+            const isDark = html.classList.toggle('dark');
+            themeIcon.textContent = isDark ? '☀️' : '🌙';
+            // Preview updates automatically via CSS variables
+        });
+
+        /**
+         * Updates the visual scale of the preview box.
+         */
+        function updatePreview() {
+            let w = parseInt(widthInput.value) || 1;
+            let h = parseInt(heightInput.value) || 1;
+
+            const maxPreviewSize = 220;
+            // Proportionally scale the preview to fit the container
+            const scale = Math.min(maxPreviewSize / w, maxPreviewSize / h);
+
+            previewBox.style.width = `${w * scale}px`;
+            previewBox.style.height = `${h * scale}px`;
+            previewLabel.textContent = `${w} × ${h}`;
+        }
+
+        /**
+         * Shows a temporary status message at the bottom of the card.
+         * Colors are handled automatically by CSS.
+         */
+        function showStatus(msg, isError = false) {
+            statusMsg.textContent = msg;
+            statusMsg.style.opacity = '1';
+
+            // If it's an error, we can add a specific class if needed, 
+            // but the base success/info color is now handled by CSS variables.
+            statusMsg.style.color = isError ? '#ef4444' : 'var(--status-color)';
+
+            setTimeout(() => {
+                statusMsg.style.opacity = '0';
+            }, 2500);
+        }
+
+        function generatePNG() {
+            const w = parseInt(widthInput.value);
+            const h = parseInt(heightInput.value);
+
+            if (!w || !h || w <= 0 || h <= 0) {
+                showStatus("Dimension Invalid", true);
+                return;
+            }
+
+            if (w > 8000 || h > 8000) {
+                showStatus("Max Size 8000px", true);
+                return;
+            }
+
+            try {
+                const canvas = document.createElement('canvas');
+                canvas.width = w;
+                canvas.height = h;
+                const dataUrl = canvas.toDataURL('image/png');
+                const link = document.createElement('a');
+
+                let orientation = "";
+                if (w > h) orientation = "_[LANDSCAPE]";
+                else if (h > w) orientation = "_[PORTRAIT]";
+                else orientation = "_[SQUARE]";
+
+                link.download = `transparent_${w}x${h}${orientation}.png`;
+                link.href = dataUrl;
+                link.click();
+                showStatus("Download Started");
+            } catch (err) {
+                showStatus("Generation Failed", true);
+            }
+        }
+
+        widthInput.addEventListener('input', () => {
+            sizeDropdown.value = "";
+            updatePreview();
+        });
+
+        heightInput.addEventListener('input', () => {
+            sizeDropdown.value = "";
+            updatePreview();
+        });
+
+        let currentRotation = 0;
+        swapBtn.addEventListener('click', () => {
+            currentRotation += 180;
+            const rotator = swapBtn.querySelector('.swapper-rotator');
+            rotator.style.transform = `rotate(${currentRotation}deg)`;
+
+            const temp = widthInput.value;
+            widthInput.value = heightInput.value;
+            heightInput.value = temp;
+            updatePreview();
+        });
+
+        // Global Aura Handler
+        document.addEventListener('mousedown', (e) => {
+            const el = e.target.closest('.ctrl-action, .input-field, .btn-primary, select');
+
+            // Clear previous selections
+            document.querySelectorAll('.selected').forEach(b => b.classList.remove('selected'));
+
+            if (el) {
+                el.classList.add('selected');
+                // Maintain actual browser focus for inputs
+                if (el.tagName === 'INPUT' || el.tagName === 'SELECT') {
+                    setTimeout(() => el.focus(), 0);
+                }
+            }
+        });
+
+        sizeDropdown.addEventListener('change', (e) => {
+            if (!e.target.value) return;
+            const [w, h] = e.target.value.split('x');
+            widthInput.value = w;
+            heightInput.value = h;
+            updatePreview();
+        });
+
+        ratioBtns.forEach(btn => {
+            btn.addEventListener('click', () => {
+                const ratioStr = btn.dataset.ratio;
+                const [rw, rh] = ratioStr.split(':').map(Number);
+                const currentW = parseInt(widthInput.value);
+                heightInput.value = Math.round((currentW / rw) * rh);
+                sizeDropdown.value = "";
+                updatePreview();
+            });
+        });
+
+        downloadBtn.addEventListener('click', generatePNG);
+
+        // Init
+        updatePreview();
+    </script>
+</body>
+
+</html>
