@@ -3,7 +3,7 @@
 **ClearGen** is a premium, zero-friction utility designed for creators who need transparent PNG assets fast. Built with a focus on tactile feedback and high-end aesthetics, it turns the chore of asset creation into a "joy-hopping" experience.
 
 ---
-## 🖼️ Screenshots
+## 🌓 Screenshots
 <div align="center">
   <b>NOTE:</b> <i><b>Toggle Dark/Light Mode</b> via button in upper-right corner of the page</i><br> 
   <img width="280" height="565" alt="Screenshot (Dark Mode)" src="https://github.com/user-attachments/assets/d5bdb2c5-d85c-4e8b-88db-84bcba698a2c" Title="Dark Mode" /><img width="280" height="565" alt="Screenshot (Light Mode)" src="https://github.com/user-attachments/assets/7564832c-7d6e-434c-a055-826ac8e4608e" Title="Light Mode" /><br>
