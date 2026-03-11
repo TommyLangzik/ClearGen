@@ -31,6 +31,9 @@ ClearGen requires **no installation** and has **zero dependencies**.
 
 *Pro-Tip: You can "Install" ClearGen as a PWA (Progressive Web App) by clicking the install icon in your browser's URL bar for a native desktop experience.*
 
+## 📝 _Quick Note:_
+_The code within the 2 html files in the repo is identical. They've been uploaded separately simply because **GitHub Pages** functionality requires the root file to be called "index.html"._
+
 ---
 ## 🛠️ Built With
 - **HTML5 Canvas**: Pure client-side PNG generation.
